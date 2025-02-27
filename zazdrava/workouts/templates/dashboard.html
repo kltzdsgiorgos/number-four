@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Your Workouts</h2>
+  <a href="{% url 'workouts:upload_workout' %}">Upload Workout</a>
+  <ul>
+    {% for workout in workouts %}
+      <li>
+        <a href="{% url 'workouts:view_workout' workout.id %}">{{ workout.workout_name }} - {{ workout.uploaded_at }}</a>
+      </li>
+    {% empty %}
+      <li>No workouts uploaded yet.</li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'workouts:logout' %}">Logout</a>
+{% endblock %}
