@@ -33,28 +33,29 @@ def upload_workout(request):
             return redirect("workouts:dashboard")
     else:
         form = WorkoutUploadForm()
+    print("FILE UPLOADED")
     return render(request, "upload.html", {"form": form})
 
 
 def handle_fit_file(file, workout_name):
     """Extracts data from FIT file and saves it to the database under a workout."""
+    print("FILE PARSED")
     fit_data = fitparse.FitFile(file)
     records = []
     workout, created = Workout.objects.get_or_create(name=workout_name)
-    print("We made it so far!!!!!!!!!!!")
-    print(workout)
     # Ensure Workout exists
     for record in fit_data.get_messages("record"):
         record_data = {}
         timestamp = None
-
         for field in record:
-            print(type(field))
             if field.name and field.value is not None:
                 if field.name == "timestamp":
-                    timestamp = field.value
-                else:
-                    record_data[field.name] = field.value
+                    print("OK")
+                  #  timestamp = field.value
+                ##if field.name == "position_lon":
+                 #zx   print(type(field.value()))
+                #else:
+                 #   record_data[field.name] = field.value
 
         if timestamp:
             records.append(
