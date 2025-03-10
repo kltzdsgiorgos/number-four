@@ -28,7 +28,12 @@
                         </li>
                      {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'workouts:login' %}">Log In</a>
+                            <form method="post" action="{% url 'workouts:logout' %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link nav-link text-danger" style="border: none; padding: 0;">
+                                    Logout
+                                </button>
+                            </form>
                         </li>
                     {% endif %}
                 </ul>
