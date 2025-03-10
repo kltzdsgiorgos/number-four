@@ -50,6 +50,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 ROOT_URLCONF = "zazdrava.urls"
 
 TEMPLATES = [
@@ -122,3 +126,9 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# Redirect settings
+
+LOGIN_REDIRECT_URL = "workouts:dashboard"
+LOGOUT_REDIRECT_URL = "workouts:login"

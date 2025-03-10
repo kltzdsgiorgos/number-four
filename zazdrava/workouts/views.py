@@ -1,4 +1,5 @@
 import gzip, os, fitparse
+from datetime import datetime
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.shortcuts import render, redirect, get_object_or_404
@@ -33,39 +34,70 @@ def upload_workout(request):
             return redirect("workouts:dashboard")
     else:
         form = WorkoutUploadForm()
-    print("FILE UPLOADED")
     return render(request, "upload.html", {"form": form})
-
 
 def handle_fit_file(file, workout_name):
     """Extracts data from FIT file and saves it to the database under a workout."""
-    print("FILE PARSED")
     fit_data = fitparse.FitFile(file)
     records = []
-    workout, created = Workout.objects.get_or_create(name=workout_name)
-    # Ensure Workout exists
+    workout, _ = Workout.objects.get_or_create(name=workout_name)
+
     for record in fit_data.get_messages("record"):
         record_data = {}
-        timestamp = None
+        record_fields = {
+            "timestamp": None,
+            "position_lat": None,
+            "position_long": None,
+            "gps_accuracy": None,
+            "enhanced_altitude": None,
+            "altitude": None,
+            "grade": None,
+            "distance": None,
+            "heart_rate": None,
+            "calories": None,
+            "enhanced_speed": None,
+            "speed": None,
+            "battery_soc": None,
+            "ascent": None,
+        }
+
         for field in record:
             if field.name and field.value is not None:
-                if field.name == "timestamp":
-                    print("OK")
-                  #  timestamp = field.value
-                ##if field.name == "position_lon":
-                 #zx   print(type(field.value()))
-                #else:
-                 #   record_data[field.name] = field.value
+                if isinstance(field.value, datetime):
+                    record_data[field.name] = field.value.isoformat()
+                else:
+                    record_data[field.name] = field.value
 
-        if timestamp:
+                if field.name in record_fields:
+                    record_fields[field.name] = field.value
+
+        if record_fields["timestamp"]:
             records.append(
-                Record(workout=workout, timestamp=timestamp, data=record_data)
+                Record(
+                    workout=workout,
+                    timestamp=record_fields["timestamp"],
+                    position_lat=record_fields["position_lat"],
+                    position_long=record_fields["position_long"],
+                    gps_accuracy=record_fields["gps_accuracy"],
+                    enhanced_altitude=record_fields["enhanced_altitude"],
+                    altitude=record_fields["altitude"],
+                    grade=record_fields["grade"],
+                    distance=record_fields["distance"],
+                    heart_rate=record_fields["heart_rate"],
+                    calories=record_fields["calories"],
+                    enhanced_speed=record_fields["enhanced_speed"],
+                    speed=record_fields["speed"],
+                    battery_soc=record_fields["battery_soc"],
+                    ascent=record_fields["ascent"],
+                    data=record_data,
+                )
             )
 
     Record.objects.bulk_create(records)
 
 
-# @login_required
+
+@login_required
 def view_workout(request, workout_id):
     workout = get_object_or_404(Workout, id=workout_id)
     records = Record.objects.filter(workout=workout)
@@ -73,8 +105,7 @@ def view_workout(request, workout_id):
         request, "workout_detail.html", {"workout": workout, "records": records}
     )
 
-
-# @login_required
+@login_required
 def dashboard(request):
     workouts = Workout.objects.all
     return render(request, "dashboard.html", {"workouts": workouts})
