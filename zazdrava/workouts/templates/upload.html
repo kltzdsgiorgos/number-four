@@ -3,16 +3,21 @@
 {% block title %}Upload FIT File{% endblock %}
 
 {% block content %}
-<div class="card">
+<div class="card mx-auto mt-5" style="max-width: 500px;">
+    <div class="card-header bg-primary text-white">
+        <h2 class="card-title mb-0">Upload FIT File</h2>
+    </div>
     <div class="card-body">
-        <h2 class="card-title">Upload FIT File</h2>
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
             {% csrf_token %}
             <div class="mb-3">
-                <label class="form-label">Select FIT File</label>
+                {{ form.file.label_tag }}
                 {{ form.file }}
+                <div class="invalid-feedback">
+                    Please select a FIT file.
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
+            <button type="submit" class="btn btn-primary w-100">Upload</button>
         </form>
     </div>
 </div>

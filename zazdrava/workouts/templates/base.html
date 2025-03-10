@@ -3,27 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>{% block title %}My Workout App{% endblock %}</title>
 </head>
 <body>
-    <header>
-        <h1>Workout Tracker</h1>
-        <nav>
-            <ul>
-                <li><a href="{% url 'workouts:dashboard' %}">Dashboard</a></li>
-                <li><a href="{% url 'workouts:upload_workout' %}">Upload Workout</a></li>
-                <li><a href="{% url 'workouts:logout' %}">Logout</a></li>
-            </ul>
-        </nav>
-    </header>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'workouts:dashboard' %}">Workout Tracker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'workouts:dashboard' %}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'workouts:upload_workout' %}">Upload Workout</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="{% url 'workouts:logout' %}">Logout</a>
+                        </li>
+                     {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'workouts:login' %}">Log In</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    <main>
+    <!-- Main Content -->
+    <main class="container">
         {% block content %}
         {% endblock %}
     </main>
 
-    <footer>
-        <p>&copy; {{ current_year }}</p>
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-4">
+        <p class="mb-0">&copy; {{ current_year }} Workout Tracker</p>
     </footer>
+
+    <!-- Bootstrap JS (with Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
