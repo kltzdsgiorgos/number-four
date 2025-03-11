@@ -7,6 +7,10 @@ from django.contrib.auth.decorators import login_required
 from .models import Workout, Record
 from .forms import WorkoutUploadForm
 
+import plotly.express as px
+import pandas as pd
+import plotly.io as pio
+
 
 @login_required
 def upload_workout(request):
@@ -109,3 +113,37 @@ def view_workout(request, workout_id):
 def dashboard(request):
     workouts = Workout.objects.all
     return render(request, "dashboard.html", {"workouts": workouts})
+
+
+def fit_data_view(request):
+    """Display only the workout chart."""
+    workouts = Workout.objects.prefetch_related("records").all()
+
+    if not workouts.exists():
+        return render(
+            request,
+            "zazdrava/fit_data.html",
+            {"charts": "<p>No workout data available.</p>"},
+        )
+
+    # Process data
+    data = []
+    for workout in workouts:
+        for record in workout.records.all():  # ✅ Corrected attribute access
+            data.append(
+                {
+                    "timestamp": record.timestamp,
+                    "speed": record.data.get("speed", 0),
+                    "workout": workout.name,
+                }
+            )
+
+    df = pd.DataFrame(data)
+
+    # Create the Plotly chart
+    fig = px.line(
+        df, x="timestamp", y="speed", color="workout", title="Workout Speed Over Time"
+    )
+    chart_html = fig.to_html(full_html=False)
+
+    return render(request, "zazdrava/fit_data.html", {"charts": chart_html})

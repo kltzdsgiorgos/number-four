@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+<script src="path/to/chartjs/dist/chart.umd.js"></script>
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Workout Data Visualization</h2>
+    
+    <div class="chart-container">
+        {{ charts|safe }}
+    </div>
+</div>
+{% endblock %}
